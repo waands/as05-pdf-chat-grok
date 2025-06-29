@@ -3,7 +3,7 @@ import streamlit as st
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_chroma import Chroma
+from langchain_community.vectorstores import FAISS
 import openai
 
 # =============================
@@ -35,7 +35,7 @@ if uploaded_file:
 
     # Embeddings
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    vectordb = Chroma.from_documents(documents=chunks, embedding=embeddings)
+    vectordb = FAISS.from_documents(chunks, embeddings)
 
     st.success("✅ PDF processado! Agora faça sua pergunta.")
 
