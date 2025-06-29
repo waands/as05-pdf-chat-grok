@@ -4,4 +4,4 @@ sentence-transformers
 faiss-cpu
 pypdf
 tiktoken
-together-ai           # SDK oficial
+together
