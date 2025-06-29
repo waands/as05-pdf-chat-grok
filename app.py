@@ -34,8 +34,13 @@ if uploaded_file:
     chunks = splitter.split_documents(docs)
 
     # Embeddings
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    # Embeddings
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2",
+        model_kwargs={"device": "cpu"}
+    )
     vectordb = FAISS.from_documents(chunks, embeddings)
+
 
     st.success("✅ PDF processado! Agora faça sua pergunta.")
 
