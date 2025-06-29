@@ -54,9 +54,29 @@ if uploaded_file:
                 f"Contexto:\n{context}\n\nPergunta: {query}\n\nResponda em português, de forma clara e objetiva."
             ]
 
-            model = genai.GenerativeModel("models/gemini-1.5-pro")
-            response = model.generate_content(messages)
-            answer = response.text
+            # 1) Trocar para gemini-1.0-pro (menos tokens)
+            model = genai.GenerativeModel("models/gemini-1.0-pro")
+
+            # 2) Reduzir contexto e resposta
+            retriever = vectordb.as_retriever(search_kwargs={"k": 2})   # em vez de 3
+            response = model.generate_content(
+                messages,
+                generation_config={
+                    "max_output_tokens": 300,     # antes 500
+                    "temperature": 0.1
+                }
+            )
+
+            # 3) Capturar erro de quota
+            try:
+                answer = response.text
+            except Exception as e:
+                st.error(
+                    "⚠️ Limite gratuito do Gemini atingido. "
+                    "Tente novamente em alguns minutos ou ative billing para mais requisições."
+                )
+                st.stop()
+
 
 
             st.markdown("### 🤖 Resposta")

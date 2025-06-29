@@ -1,7 +1,7 @@
 streamlit
 langchain-community
 sentence-transformers
+faiss-cpu
 pypdf
 tiktoken
-faiss-cpu
 google-generativeai
