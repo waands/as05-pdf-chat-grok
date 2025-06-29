@@ -54,9 +54,10 @@ if uploaded_file:
                 f"Contexto:\n{context}\n\nPergunta: {query}\n\nResponda em português, de forma clara e objetiva."
             ]
 
-            model = genai.GenerativeModel("gemini-pro")
+            model = genai.GenerativeModel("models/gemini-1.5-pro")
             response = model.generate_content(messages)
             answer = response.text
+
 
             st.markdown("### 🤖 Resposta")
             st.write(answer)
