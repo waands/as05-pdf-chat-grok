@@ -4,19 +4,18 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-import openai
+import google.generativeai as genai
 
 # =============================
-# Configuração Grok
+# Configuração Gemini
 # =============================
-os.environ["XAI_API_KEY"] = st.secrets["XAI_API_KEY"]
-client = openai.OpenAI(api_key=os.environ["XAI_API_KEY"], base_url="https://api.x.ai/v1")
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 # =============================
 # Streamlit config
 # =============================
-st.set_page_config(page_title="Assistente PDF com Grok", page_icon="📄🤖")
-st.title("📄💬 Assistente PDF com Grok (xAI)")
+st.set_page_config(page_title="Assistente PDF com Gemini", page_icon="📄🤖")
+st.title("📄💬 Assistente PDF com Gemini (Google AI)")
 
 uploaded_file = st.file_uploader("Faça upload de um PDF", type=["pdf"])
 
@@ -34,44 +33,31 @@ if uploaded_file:
     chunks = splitter.split_documents(docs)
 
     # Embeddings
-    # Embeddings
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2",
         model_kwargs={"device": "cpu"}
     )
     vectordb = FAISS.from_documents(chunks, embeddings)
 
-
     st.success("✅ PDF processado! Agora faça sua pergunta.")
 
     query = st.text_input("Digite sua pergunta:", placeholder="Ex.: Qual é o objetivo do trabalho?")
 
     if query:
-        with st.spinner("Consultando Grok..."):
-            # Recuperar documentos relevantes
+        with st.spinner("Consultando Gemini..."):
             retriever = vectordb.as_retriever(search_kwargs={"k": 3})
             docs = retriever.get_relevant_documents(query)
             context = "\n\n".join([doc.page_content for doc in docs])
 
+            # Montar prompt
             messages = [
-                {
-                    "role": "system",
-                    "content": "Você é um assistente que responde apenas com base nos documentos fornecidos. Responda sempre em português, de forma clara e objetiva."
-                },
-                {
-                    "role": "user",
-                    "content": f"Contexto:\n{context}\n\nPergunta: {query}\n\nResposta:"
-                }
+                f"Contexto:\n{context}\n\nPergunta: {query}\n\nResponda em português, de forma clara e objetiva."
             ]
 
-            response = client.chat.completions.create(
-                model="grok-beta",
-                messages=messages,
-                temperature=0.1,
-                max_tokens=500
-            )
+            model = genai.GenerativeModel("gemini-pro")
+            response = model.generate_content(messages)
+            answer = response.text
 
-            answer = response.choices[0].message.content
             st.markdown("### 🤖 Resposta")
             st.write(answer)
 else:
