@@ -6,3 +6,4 @@ sentence-transformers
 pypdf
 tiktoken
 openai
+protobuf==4.25.3
