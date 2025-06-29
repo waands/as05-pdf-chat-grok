@@ -9,7 +9,7 @@ import openai
 # =============================
 # Configuração Grok
 # =============================
-os.environ["XAI_API_KEY"] = "xai-bUNry1gZDukbMQGe0YxSLD5k7lw1rUlGk2uOrwnFc1EmLUSE35Sh5z1GVgGBqBWa3mKFfcykMXZEZRZo"
+os.environ["XAI_API_KEY"] = st.secrets["XAI_API_KEY"]
 client = openai.OpenAI(api_key=os.environ["XAI_API_KEY"], base_url="https://api.x.ai/v1")
 
 # =============================
